@@ -21,4 +21,8 @@ def training():
     train_batch = tf.cast(train_batch, dtype=tf.float32)
     train_label_batch = tf.cast(train_label_batch, dtype=tf.int64)
 
-    train_logits = network_definition.
+    train_logits = network_definition.create_network(batch_size, num_classes=None, add_logits=True, reuse=None,
+                   create_summaries=True, weight_decay=1e-8)
+
+
+
