@@ -83,26 +83,34 @@ def create_network(images, num_classes=None, add_logits=True, reuse=None,
     # Features in rows, normalize axis 1.
     features = tf.nn.l2_normalize(features, dim=1)
 
-    if add_logits:
-        with slim.variable_scope.variable_scope("ball", reuse=reuse):
-            weights = slim.model_variable(
-                "mean_vectors", (feature_dim, int(num_classes)),
-                initializer=tf.truncated_normal_initializer(stddev=1e-3),
-                regularizer=None)
-            scale = slim.model_variable(
-                "scale", (), tf.float32,
-                initializer=tf.constant_initializer(0., tf.float32),
-                regularizer=slim.l2_regularizer(1e-1))
-            if create_summaries:
-                tf.summary.scalar("scale", scale)
-            scale = tf.nn.softplus(scale)
+    # if add_logits:
+    #     with slim.variable_scope.variable_scope("ball", reuse=reuse):
+    #         weights = slim.model_variable(
+    #             "mean_vectors", (feature_dim, int(num_classes)),
+    #             initializer=tf.truncated_normal_initializer(stddev=1e-3),
+    #             regularizer=None)
+    #         scale = slim.model_variable(
+    #             "scale", (), tf.float32,
+    #             initializer=tf.constant_initializer(0., tf.float32),
+    #             regularizer=slim.l2_regularizer(1e-1))
+    #         if create_summaries:
+    #             tf.summary.scalar("scale", scale)
+    #         scale = tf.nn.softplus(scale)
 
-        # Mean vectors in colums, normalize axis 0.
-        weights_normed = tf.nn.l2_normalize(weights, dim=0)
-        logits = scale * tf.matmul(features, weights_normed)
-    else:
-        logits = None
-    return features, logits
+    #     # Mean vectors in colums, normalize axis 0.
+    #     weights_normed = tf.nn.l2_normalize(weights, dim=0)
+    #     logits = scale * tf.matmul(features, weights_normed)
+    # else:
+    #     logits = None
+    # return features, logits
+    
+    features = slim.batch_norm(features, scope="ball", reuse=reuse)
+    feature_norm = tf.sqrt(
+        tf.constant(1e-8, tf.float32) + tf.reduce_sum(tf.square(features), [1], keepdims=True)
+    )
+    features = features/feature_norm
+    return features, None
+
 
 
 def create_network_factory(is_training, num_classes, add_logits,
@@ -131,3 +139,4 @@ def preprocess(image, is_training=False, input_is_bgr=False):
     if is_training:
         image = tf.image.random_flip_left_right(image)
     return image
+
