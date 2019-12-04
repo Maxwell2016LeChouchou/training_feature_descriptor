@@ -217,5 +217,3 @@ if __name__ == '__main__':
     model = resnet_18()
     plot_model(model, 'ResNet-18.png')  # 保存模型图
 
-
-https://www.jianshu.com/p/bc15cddfd419
