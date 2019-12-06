@@ -1,26 +1,6 @@
 import tensorflow as tf
 from PIL import Image
 
-def paths2list(path_file_name):
-    list = []
-    for line in open(path_file_name):
-        list.append(line[0:len(line)-1])
-    return list
-def pathslabel2list(path_file_name):
-    list = []
-    for line in open(path_file_name):
-        #存储是label是string格式，这里需要强转一下
-        list.append(int(line[0:len(line)-1]))
-    return list
-def one_hot_2_int(one_hot):
-    for i in range(10):
-        if one_hot[i] == 1:
-            return  i
-        else:
-            continue
-    return 0
-train_image_list = paths2list(r"E:\mnist_jpg\jpg\train\train_image_list.txt")
-train_image_label_list =  pathslabel2list(r"E:\mnist_jpg\jpg\train\train_label_list.txt")
 
 #定义创建TFRcord的文件
 
@@ -51,6 +31,38 @@ def image2tfrecord(image_list,label_list):
     writer.close()
 #调用上述接口，将image与label数据转化为tfrecord格式的数据
 image2tfrecord(train_image_list,train_image_label_list)
+
+
+
+def decode_from_tfrecord(example_proto):
+    reader = tf.TFRecordReader()  #read the tfrecord
+    _,example = reader.read(example_proto)
+    features = tf.parse_single_example(example,features={'image/height': tf.FixedLenFeatures((), tf.int64),
+                                                         'image/width': tf.FixedLenFeature((), tf.int64),
+                                                         'image/filename': tf.FixedLenFeature((), tf.string),
+                                                         'image/source_id': tf.FixedLenFeature((), tf.string),
+                                                         'image/encoded': tf.FixedLenFeature((), tf.string),
+                                                         'image/format': tf.FixedLenFeature((), tf.string),
+                                                         'image/object/bbox/xmin': tf.VarLenFeature(tf.float32),
+                                                         'image/object/bbox/xmax': tf.VarLenFeature(tf.float32),
+                                                         'image/object/bbox/ymin': tf.VarLenFeature(tf.float32),
+                                                         'image/object/bbox/ymax': tf.VarLenFeature(tf.float32),
+                                                         'image/object/class/text': tf.VarLenFeature(tf.string),
+                                                         'image/object/class/label': tf.VarLenFeature(tf.int64),
+                                                         })
+
+
+
+41     features=tf.parse_single_example(example,features={'image_raw':#解码
+42             tf.FixedLenFeature([],tf.string),
+43             'label':tf.FixedLenFeature([34,1],tf.int64)})
+44     image=tf.decode_raw(features['image_raw'],tf.uint8)
+45     image.set_shape(rows*cols)
+46     image=tf.cast(image,tf.float32)*(1./255)-0.5
+47     label=tf.cast(features['label'],tf.int32)
+48     return image,label
+49     
+
 
 #定义解析数据函数
 #入参example_proto也就是tf_serialized
