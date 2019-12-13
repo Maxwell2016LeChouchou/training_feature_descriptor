@@ -104,7 +104,7 @@ def create_network(images, num_classes=None, add_logits=False, reuse=None,
     #     logits = None
     # return features, logits
     
-    features = slim.batch_norm(features, scope="ball", reuse=reuse)
+    # features = slim.batch_norm(features, scope="ball", reuse=reuse)
     # feature_norm = tf.sqrt(
     #     tf.constant(1e-8, tf.float32) + tf.reduce_sum(tf.square(features), [1], keepdims=True)
     # )
@@ -123,7 +123,7 @@ def factory_fn(image):
                         ):
         with slim.arg_scope([slim.conv2d, slim.fully_connected, slim.batch_norm, slim.layer_norm],reuse=None):
             features, logits = create_network(
-                    image, num_classes=None, add_logits=False,
+                    image, num_classes=1, add_logits=False,
                     reuse=None, create_summaries=False,
                     weight_decay=1e-8)
     return features, logits
