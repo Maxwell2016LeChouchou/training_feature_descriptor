@@ -5,7 +5,7 @@ import tensorflow.contrib.slim as slim
 from . import residual_net
 
 
-def create_network(images, num_classes=None, add_logits=True, reuse=None,
+def create_network(images, num_classes=None, add_logits=False, reuse=None,
                    create_summaries=True, weight_decay=1e-8):
     nonlinearity = tf.nn.elu
     conv_weight_init = tf.truncated_normal_initializer(stddev=1e-3)
@@ -105,31 +105,28 @@ def create_network(images, num_classes=None, add_logits=True, reuse=None,
     # return features, logits
     
     features = slim.batch_norm(features, scope="ball", reuse=reuse)
-    feature_norm = tf.sqrt(
-        tf.constant(1e-8, tf.float32) + tf.reduce_sum(tf.square(features), [1], keepdims=True)
-    )
-    features = features/feature_norm
+    # feature_norm = tf.sqrt(
+    #     tf.constant(1e-8, tf.float32) + tf.reduce_sum(tf.square(features), [1], keepdims=True)
+    # )
+    # features = features/feature_norm
     return features, None
 
 
 
-def create_network_factory(is_training, num_classes, add_logits,
-                           weight_decay=1e-8, reuse=None):
-    # add_logits = args.loss_mode == "cosine-softmax"
+# def create_network_factory(is_training, num_classes, add_logits,
+#                            weight_decay=1e-8, reuse=None):
+#     # add_logits = args.loss_mode == "cosine-softmax"
 
-    def factory_fn(image):
-            with slim.arg_scope([slim.batch_norm, slim.dropout],
-                                is_training=is_training):
-                with slim.arg_scope([slim.conv2d, slim.fully_connected,
-                                     slim.batch_norm, slim.layer_norm],
-                                    reuse=reuse):
-                    features, logits = create_network(
-                        image, num_classes=num_classes, add_logits=add_logits,
-                        reuse=reuse, create_summaries=is_training,
-                        weight_decay=weight_decay)
-                    return features, logits
-
-    return factory_fn
+def factory_fn(image):
+    with slim.arg_scope([slim.batch_norm, slim.dropout],
+                        #is_training=is_training
+                        ):
+        with slim.arg_scope([slim.conv2d, slim.fully_connected, slim.batch_norm, slim.layer_norm],reuse=None):
+            features, logits = create_network(
+                    image, num_classes=None, add_logits=False,
+                    reuse=None, create_summaries=False,
+                    weight_decay=1e-8)
+    return features, logits
 
 
 def preprocess(image, is_training=False, input_is_bgr=False):
