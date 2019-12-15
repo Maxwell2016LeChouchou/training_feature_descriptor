@@ -90,6 +90,8 @@ def convert_to_tfrecord(output_path, mode, anno):
      
 def get_annotations(input_csv_list, input_image_list, classes):
 
+    # Get the annotations of faces
+
     files = get_training_images(input_csv_list, input_image_list)
     # for i in image_list:
     #     files.append(i)
@@ -104,12 +106,19 @@ def get_annotations(input_csv_list, input_image_list, classes):
     #annotation = zip(files, labels
 
 
+def get_annotations_neg(input_csv_list, input_image_list, classes):
+    
+    #Get the annotation of non faces
+
+    files = get_training_images()
+
+
 
 def main(_):
 
     # Train_tfrecord
-    input_csv_list_train = '/home/maxwell/Downloads/MTCNN/training_feature_descriptor/tfrecord/train_csv/'
-    input_image_list_train = '/home/maxwell/Downloads/MTCNN/training_feature_descriptor/tfrecord/train_dataset/'
+    input_csv_list_train = '/home/max/Desktop/train_data/train_csv/'
+    input_image_list_train = '/home/max/Desktop/train_data/'
     output_path_train = '/home/maxwell/Downloads/MTCNN/training_feature_descriptor/tfrecord/'
 
     # Eval_tfrecord
@@ -117,11 +126,12 @@ def main(_):
     input_image_list_eval = '/home/maxwell/Downloads/MTCNN/training_feature_descriptor/tfrecord/eval_dataset/'
     output_path_eval = '/home/maxwell/Downloads/MTCNN/training_feature_descriptor/tfrecord/'
 
-    label = ['face']
+    label_pos = ['face']
+    label_neg = ['Non-face']
     mode_train = tf.estimator.ModeKeys.TRAIN
     mode_eval = tf.estimator.ModeKeys.EVAL
 
-    annotation_train = get_annotations(input_csv_list_train, input_image_list_train, label)
+    annotation_train = get_annotations(input_csv_list_train, input_image_list_train, label_pos)
     annotation_eval = get_annotations(input_csv_list_eval, input_image_list_eval, label)
 
     convert_to_tfrecord(output_path_train, mode_train, annotation_train)
