@@ -23,36 +23,34 @@ def read_face_bbox(bbox_dir, output_dir):
             width_bbox = xmax - xmin
             print(width_bbox)
             height_bbox = ymax - ymin
-            root = '/home/max/Desktop/test_data/test_images/'
+            root = '/home/maxwell/Desktop/train_data/train_images/'
             im_filename = os.path.join(root, filename)
             im = cv2.imread(im_filename)
-            dimensions = im.shape
+            #dimensions = im.shape
             height_image = im.shape[0]
             width_image = im.shape[1]
             print(width_image)
 
-            xmin_neg = random.randrange(width_image-width_bbox)  # xmin of negative sample 
-            xmax_neg = xmin_neg + width_bbox                    # xmax of negative sample
-            ymin_neg = random.randrange(height_image-height_bbox) # ymin of negative sample
-            ymax_neg = ymin_neg + height_image                  # ymax of negative sample
-            bbox_b = []
-            bbox_b.extend([xmin_neg, xmax_neg, ymin_neg, ymax_neg])
-
-            iou = bbox_IOU(bbox_a, bbox_b)
-
+            #counter = 3
+            iou = 1
+            #for i in counter:
             while iou > 0.1:
+                bbox_b = []
                 xmin_neg = random.randrange(width_image-width_bbox)  # xmin of negative sample 
                 xmax_neg = xmin_neg + width_bbox                    # xmax of negative sample
                 ymin_neg = random.randrange(height_image-height_bbox) # ymin of negative sample
-                ymax_neg = ymin_neg + height_image                  # ymax of negative sample
-                bbox_b = []
+                ymax_neg = ymin_neg + height_bbox                  # ymax of negative sample
                 bbox_b.extend([xmin_neg, xmax_neg, ymin_neg, ymax_neg])
+                iou = bbox_IOU(bbox_a, bbox_b)
+                cropped_neg_samples = im[int(bbox_b[2]):int(bbox_b[3]), int(bbox_b[0]):int(bbox_b[1]), :]
+                
+                save_to = os.path.join(output_dir, filename)
 
-            cropped_neg_samples = im[int(bbox_b[2]):int(bbox_b[3]), int(bbox_b[0]):int(bbox_b[1]), :]
-            save_to = os.path.join(output_dir, filename)       
+                # Move out following folders due to the folder has too many big face picture to get neg samples
+                # Alex_Ferguson, Alexandra_Pelosi, Alexander_Payne
 
             os.makedirs(os.path.split(save_to)[0], exist_ok=True)
-            cv2.imwrite(save_to, cropped_image)
+            cv2.imwrite(save_to, cropped_neg_samples)
             print('Saving ', save_to)
 
             
@@ -75,5 +73,5 @@ def bbox_IOU(bbox_a, bbox_b):
     return iou
 
 
-read_face_bbox('/home/max/Desktop/test_data/test_csv', '/home/max/Desktop/test_data/test_neg_samples')
+read_face_bbox('/home/maxwell/Desktop/train_data/train_csv', '/home/maxwell/Desktop/train_data/train_neg_samples_3')
     
