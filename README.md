@@ -6,14 +6,15 @@ The images, tfrecords and ckpt are saved in my local computer due to github only
 
 
 # Data Processing:
-1. Dataset from Youtube faces
-Postive Training dataset consists of all youtube celebrity face groudtruth which extract their bboxs from youtube faces, as a result of being no background from each picture, only faces
+Dataset from Youtube faces
 
-Negative Training dataset is background obtained from the original pictures of youtube faces, have same size of faces. Details are in code: test_4.py
+1. Postive Training dataset consists of all youtube celebrity face groudtruth which extract their bboxs from youtube faces, as a result of being no background from each picture, only faces
 
-Overall postive training dataset has 8494 images, negative training dataset has 25482 images to satify Postive Training Dataset :  Negative Training Dataset = 1 : 3
+2. Negative Training dataset is background obtained from the original pictures of youtube faces, have same size of faces. Details are in code: test_4.py
 
-Likewise the training dataset, the eval dataset also have the same structures of training dataset, and eval postive training dataset(1945 pos images) : eval negtive training dataset(5838 neg images)
+3. Overall postive training dataset has 8494 images, negative training dataset has 25482 images to satify Postive Training Dataset :  Negative Training Dataset = 1 : 3
+
+4. Likewise the training dataset, the eval dataset also have the same structures of training dataset, and eval postive training dataset(1945 pos images) : eval negtive training dataset(5838 neg images)
 
 # Convert to tfrecord:
 Convert all the postive dataset with label (faces = 1), and negative dataset with label(non-faces = 0) to tfrecords. There is two ways to do so:
@@ -30,6 +31,6 @@ There is two ways to do so:
 
 
 # Result:
-Above 99% training (supposed to be, simple classification, unque dataset)
+Above 99% training (supposed to be, simple classification, unique dataset)
 
 Result.png

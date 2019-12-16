@@ -46,7 +46,7 @@ def input_fn(mode, batch_size=1):
 
     dataset = tf.data.TFRecordDataset(tfrecords_file)
 
-    dataset = dataset.map(parser, num_parallel_calls=1)
+    dataset = dataset.map(parser, num_parallel_calls=1) # Only one GPU in my computer
 
     dataset = dataset.batch(batch_size)
 
