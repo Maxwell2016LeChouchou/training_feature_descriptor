@@ -1,3 +1,3 @@
 # training_feature_descriptor
 
-The images, tfrecords and ckpt will different folder under ../MTCNN/feature_descriptor_data/
+The images, tfrecords and ckpt are saved in my local computer due to github only allows passing less 100MB online
