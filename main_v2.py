@@ -6,9 +6,10 @@ import os
 import tensorflow as tf 
 from network import network_definition
 
-data_dir = '/home/maxwell/Downloads/MTCNN/training_feature_descriptor/tfrecord/'
+data_dir = '/home/maxwell/Desktop/tfrecord/'
 
 MODES = [tf.estimator.ModeKeys.TRAIN, tf.estimator.ModeKeys.EVAL, tf.estimator.ModeKeys.PREDICT]
+classes = 2
 
 def input_fn(mode, batch_size=1):
     
@@ -34,7 +35,7 @@ def input_fn(mode, batch_size=1):
 
         label = tf.cast(features['image/class/label'], tf.int32)
 
-        return image, label
+        return image, tf.one_hot(label, classes)
     
     if mode in MODES:
         tfrecords_file = os.path.join(data_dir, mode + '.tfrecords')
@@ -59,7 +60,7 @@ def input_fn(mode, batch_size=1):
     return images, labels
 
 def my_model(inputs, mode):
-    classes=1
+
     net = tf.reshape(inputs, [-1, 224, 224, 1])
     net = tf.layers.conv2d(net, 32, [3, 3], padding='same', activation=tf.nn.relu)
     net = tf.layers.max_pooling2d(net, [2, 2], strides=2)
@@ -83,7 +84,7 @@ def my_model_fn(features, labels, mode):
 
 
     logit_features = my_model(features, mode)
-    labels = tf.expand_dims(labels, 1)
+    #labels = tf.expand_dims(labels, 1)
 
     predictions = {
         'classes': tf.argmax(input=logit_features, axis=1),
@@ -138,7 +139,7 @@ def main(_):
 
     model = tf.estimator.Estimator(
         model_fn=my_model_fn,
-        model_dir='/home/maxwell/Downloads/MTCNN/training_feature_descriptor/model_store'
+        model_dir='/home/maxwell/Desktop/model_store'
     )
 
     for i in range(20):
